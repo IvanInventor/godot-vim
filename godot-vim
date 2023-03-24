@@ -1,0 +1,15 @@
+#!/bin/bash
+
+PWD=$1
+FILENAME=$2
+LINE=$3
+COL=$4
+
+SOCKET_NAME="/tmp/vim-godot.$PPID"
+
+if [ -S "$SOCKET_NAME" ]; then
+	vim --server "$SOCKET_NAME" --remote-tab "$FILENAME"; vim --server "$SOCKET_NAME" --remote-expr "cursor($LINE,$COL)"
+else
+	alacritty -e vim --listen "$SOCKET_NAME" -- "$FILENAME"
+fi
+
