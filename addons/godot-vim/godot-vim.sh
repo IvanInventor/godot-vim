@@ -1,18 +1,19 @@
 #!/bin/bash
 
-PWD=$1
-FILENAME=$(realpath --relative-to="$1" "$2") # TODO: filename without path as tab name
-LINE=$3
-COL=$4
+TERM_PATH=$1
+PWD=$2
+FILENAME=$(realpath --relative-to="$2" "$3") # TODO: filename without path as tab name
+LINE=$4
+COL=$5
 
 SOCKET_NAME="/tmp/godot-vim.$PPID"
-FOCUS_CMD='wmctrl -ia $WINDOWID'
+which wmctrl 2>/dev/null && FOCUS_CMD='wmctrl -ia $WINDOWID'
 
 if [ -S "$SOCKET_NAME" ]; then
 	vim --server "$SOCKET_NAME" --remote-tab "$FILENAME"
 	vim --server "$SOCKET_NAME" --remote-expr "cursor($LINE,$COL)"
-	vim --server "$SOCKET_NAME" --remote-expr "system('$FOCUS_CMD')"
+	[ -v "FOCUS_CMD" ] && vim --server "$SOCKET_NAME" --remote-expr "system('$FOCUS_CMD')"
 else
-	alacritty -e vim --listen "$SOCKET_NAME" "+call cursor($LINE,$COL)" -- "$FILENAME"
+	$TERM_PATH -e vim --listen "$SOCKET_NAME" "+call cursor($LINE,$COL)" -- "$FILENAME"
 fi
 

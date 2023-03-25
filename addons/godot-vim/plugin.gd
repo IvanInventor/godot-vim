@@ -51,7 +51,7 @@ func _load_config():
 func _apply_vim_config():
 	get_editor_interface().get_editor_settings().set_setting("text_editor/external/use_external_editor", true)
 	get_editor_interface().get_editor_settings().set_setting("text_editor/external/exec_path", ProjectSettings.globalize_path("res://addons/godot-vim/godot-vim.sh"))
-	get_editor_interface().get_editor_settings().set_setting("text_editor/external/exec_flags", "\"{project}\" \"{file}\" {line} {col}")
+	get_editor_interface().get_editor_settings().set_setting("text_editor/external/exec_flags", _find_term_emulator() + " \"{project}\" \"{file}\" {line} {col}")
 
 
 func _find_term_emulator():
