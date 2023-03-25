@@ -3,14 +3,27 @@ extends EditorPlugin
 
 
 func _enable_plugin():
+	print(_find_term_emulator())
 	_dump_config()
 	_apply_vim_config()
-	pass
+	get_editor_interface().get_editor_settings().add_property_info({
+		name = "text_editor/external/exec_flags",
+		type = TYPE_STRING,
+		hint = PROPERTY_HINT_NONE,
+		hint_string = "Change first argument with a name of your terminal emulator."
+	})
+	return
 
 
 func _disable_plugin():
 	_load_config()
-	pass
+	get_editor_interface().get_editor_settings().add_property_info({
+		name = "text_editor/external/exec_flags",
+		type = TYPE_STRING,
+		hint_string = ""
+	})
+	get_editor_interface().get_editor_settings().set_setting("text_editor/external/terminal_emulator", null)
+	return
 
 
 func _dump_config():
@@ -32,6 +45,7 @@ func _load_config():
 		get_editor_interface().get_editor_settings().set_setting("text_editor/external/exec_flags", cfg.exec_flags)
 		file.close()
 		DirAccess.open("res://addons/godot-vim").remove("old_config.cfg")
+		
 
 
 func _apply_vim_config():
@@ -40,3 +54,28 @@ func _apply_vim_config():
 	get_editor_interface().get_editor_settings().set_setting("text_editor/external/exec_flags", "\"{project}\" \"{file}\" {line} {col}")
 
 
+func _find_term_emulator():
+	var emulators = [
+	"gnome-terminal",
+	"alacritty",
+	"xfce4-terminal",
+	"kitty",
+	"konsole",
+	"mate-terminal",
+	"terminator",
+	"termite",
+	"st",
+	"urxvt",
+	"lxterminal",
+	"guake",
+	"tilix",
+	"cool-retro-term",
+	"xterm",
+	"qterminal",
+	"tilda",
+	]
+	for i in emulators:
+		var found = []
+		if OS.execute("which", [i], found) == 0:
+			return found[0].strip_edges()
+	return "xterm"
