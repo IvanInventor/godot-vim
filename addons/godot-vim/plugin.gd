@@ -3,7 +3,6 @@ extends EditorPlugin
 
 
 func _enable_plugin():
-	print(_find_term_emulator())
 	_dump_config()
 	_apply_vim_config()
 	get_editor_interface().get_editor_settings().add_property_info({
